@@ -1,9 +1,31 @@
+import { listeners } from 'process';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 var player  = {score:1, name: "Jiff"}
 var newplayer = Object.assign({},player, {score: 2,name:'jiff'})
 var newplayer2 = Object.assign({},player, {score: 1,name:'Jiff'})
+function calculateWinner(squares)
+{
+  const line = [
+    [0,1,2],
+    [3,4,5],
+    [6,7,8],
+    [0,3,6],
+    [1,4,7],
+    [2,5,8],
+    [0,4,8],
+    [2,4,6],
+  ]
+  for (let i = 0; i < line.length;i++)
+  {
+    const [ a,b,c] = line[i]
+    if(squares[a] === squares[b] && squares[a] === squares[c])
+      return squares[a]
+  }
+  return null
+
+}
 // class Square extends React.Component {
 //   constructor(props)
 //   {
@@ -42,7 +64,12 @@ function Square(props){
     };
     handleClick(i)
     {
+      
       const squares = this.state.squares.slice()
+      if (calculateWinner(squares) || squares[i]) 
+      {
+        return;    
+      }
       if(squares[i] == null)
       {
         squares[i] = this.state.xIsNext ? 'X' : 'O'
@@ -58,7 +85,17 @@ function Square(props){
                     />);
     }
   render(){
-      const status = 'Next player: X'
+    const winner = calculateWinner(this.state.squares);
+    let status;
+    if(winner)
+    {
+      status = 'Winner: '+ winner;
+    }
+    else
+    {
+      status = 'Next player: '+(this.state.xIsNext ? 'X' : 'O');
+    }
+
     return (
         <div>
           <div className = "status"> {status}</div>
